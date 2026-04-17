@@ -1,14 +1,71 @@
-import { View, TextInput, Button, Text } from 'react-native'
-import { Link } from 'expo-router'
-import { useState } from 'react'
+import { View, TextInput } from "react-native";
+import { Link, useRouter } from "expo-router";
+import { useEffect, useState } from "react";
+import { Button, H4, SizableText, YStack } from "tamagui";
+import Toast from "react-native-toast-message";
+
+import { useLogin } from "../api/auth";
+import { getToken, getUser } from "../lib/storage";
+import { loginSchema } from "../validation/authSchema";
 
 export default function Login() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const router = useRouter();
+
+  const { mutateAsync, isPending } = useLogin();
+
+  const handleSubmit = async () => {
+    const result = loginSchema.safeParse({ email, password });
+
+    if (!result.success) {
+      Toast.show({
+        type: "error",
+        text1: "Invalid input",
+      });
+      return;
+    }
+
+    try {
+      await mutateAsync({ email, password });
+
+      Toast.show({
+        type: "success",
+        text1: "Login successful",
+      });
+
+      router.push("/");
+    } catch (err: any) {
+      Toast.show({
+        type: "error",
+        text1: err?.message || "Login failed",
+      });
+    }
+  };
+
+  useEffect(() => {
+    const checkToken = async () => {
+      const token = await getToken();
+      const savedUser = await getUser();
+
+      if (token || savedUser) {
+        console.log("User is logged in ✅", token);
+        console.log("savedUser", savedUser);
+      } else {
+        console.log("No token ❌");
+      }
+    };
+
+    checkToken();
+  }, []);
 
   return (
-    <View style={{ flex: 1, justifyContent: 'center', padding: 20 }}>
-      <Text style={{ fontSize: 28, marginBottom: 20 }}>Login</Text>
+    <View style={{ flex: 1, justifyContent: "center", padding: 20 }}>
+      <YStack gap="$1" mb="$4">
+        <H4 fontWeight={"700"}>Welcome Back</H4>
+
+        <SizableText>Enter your credentials to access your account</SizableText>
+      </YStack>
 
       <TextInput
         placeholder="Email"
@@ -35,11 +92,16 @@ export default function Login() {
         }}
       />
 
-      <Button title="Login" onPress={() => console.log('Login pressed')} />
+      <Button bg="#1A7FE2" col="white" onPress={handleSubmit} disabled={isPending} disabledStyle={{ bg: "#04498c" }}>
+        {isPending ? "Loading..." : "Login"}
+      </Button>
 
-      <Link href="/signup" style={{ marginTop: 20 }}>
-        Don't have an account? Sign up
-      </Link>
+      <SizableText mt="$2">
+        Don't have an account?{" "}
+        <Link href="/signup" style={{ color: "#1A7FE2", fontWeight: "700" }}>
+          Sign Up
+        </Link>
+      </SizableText>
     </View>
-  )
+  );
 }
