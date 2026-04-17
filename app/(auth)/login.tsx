@@ -1,7 +1,7 @@
 import { View, TextInput } from "react-native";
 import { Link, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { Button, H4, SizableText, YStack } from "tamagui";
+import { Button, H4, SizableText, Text, YStack } from "tamagui";
 import Toast from "react-native-toast-message";
 
 import { useLogin } from "../api/auth";
@@ -60,7 +60,7 @@ export default function Login() {
   }, []);
 
   return (
-    <View style={{ flex: 1, justifyContent: "center", padding: 20 }}>
+    <View style={{ flex: 1, justifyContent: "center", padding: 20 ,marginBottom: 130 }}>
       <YStack gap="$1" mb="$4">
         <H4 fontWeight={"700"}>Welcome Back</H4>
 
@@ -76,6 +76,7 @@ export default function Login() {
           padding: 10,
           marginBottom: 10,
           borderRadius: 8,
+          height: 50,
         }}
       />
 
@@ -89,11 +90,12 @@ export default function Login() {
           padding: 10,
           marginBottom: 20,
           borderRadius: 8,
+          height: 50,
         }}
       />
 
-      <Button bg="#1A7FE2" col="white" onPress={handleSubmit} disabled={isPending} disabledStyle={{ bg: "#04498c" }}>
-        {isPending ? "Loading..." : "Login"}
+      <Button bg="#1A7FE2" onPress={handleSubmit} disabled={isPending} disabledStyle={{ bg: "#04498c" }}>
+        <Text color="white">{isPending ? "Logging in..." : "Login"}</Text>
       </Button>
 
       <SizableText mt="$2">

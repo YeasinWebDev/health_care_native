@@ -1,22 +1,23 @@
 import { View, TextInput } from "react-native";
 import { Link } from "expo-router";
 import { useState } from "react";
-import { Button, H4, ScrollView, Select, SizableText, XStack } from "tamagui";
+import { Button, H4, ScrollView, Select, SizableText, Text, XStack } from "tamagui";
 import { Adapt, Sheet, YStack } from "tamagui";
 import { signupSchema } from "../validation/authSchema";
 import Toast from "react-native-toast-message";
-
+import { useLogin, useSignup } from "../api/auth";
 
 export default function Signup() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [address, setAddress] = useState<string>("");
-
-  const [gender, setGender] = useState<string>("");
+  const [gender, setGender] = useState<string>("MALE");
 
   const [showPassword, setShowPassword] = useState(false);
 
+  const { mutateAsync, isPending } = useSignup();
+  const { mutateAsync : login } = useLogin();
 
   const handleSubmit = async () => {
     const result = signupSchema.safeParse({
@@ -27,23 +28,45 @@ export default function Signup() {
       gender,
     });
 
+    // zod validation 
     if (!result.success) {
+
+      if (result.error._zod.def.length === 3) {
+        return Toast.show({
+          type: "error",
+          text1: "Please fill all the fields",
+        });
+      }
+
+      const message = result.error._zod.def.map((err) => err.message).join(", ");
       Toast.show({
         type: "error",
-        text1: "Please fill all the fields",
-        
-      })
+        text1: message,
+      });
+
       return;
     }
 
-    console.log("VALID DATA:", result.data);
 
-    // 👉 call API here
+    try {
+      await mutateAsync({ name, address, email, password, gender });
+
+      await login({ email, password })
+
+    } catch (err: any) {
+      console.log(err)
+      Toast.show({
+        type: "error",
+        text1: err?.message || "Signup failed",
+      });
+    }
+
+
   };
 
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-      <View style={{ flex: 1, justifyContent: "center", padding: 20, marginBottom: 100 }}>
+      <View style={{ flex: 1, justifyContent: "center", padding: 20, marginBottom: 110 }}>
         <YStack gap="$1" mb="$4">
           <H4 fontWeight={"700"}>Create an account</H4>
 
@@ -104,11 +127,11 @@ export default function Signup() {
               <Select.Content>
                 <Select.Viewport>
                   <Select.Group>
-                    <Select.Item index={0} value="male">
+                    <Select.Item index={0} value="MALE">
                       <Select.ItemText>Male</Select.ItemText>
                     </Select.Item>
 
-                    <Select.Item index={1} value="female">
+                    <Select.Item index={1} value="FEMALE">
                       <Select.ItemText>Female</Select.ItemText>
                     </Select.Item>
 
@@ -153,8 +176,8 @@ export default function Signup() {
           </Button>
         </XStack>
 
-        <Button bg="#1A7FE2" col="white" onPress={handleSubmit}>
-          Sign Up
+        <Button bg="#1A7FE2" onPress={handleSubmit} disabled={isPending} disabledStyle={{ bg: "#04498c" }}>
+          <Text color="white">{isPending ? "Signing up..." : "Sign up"}</Text>
         </Button>
 
         <SizableText mt="$2">

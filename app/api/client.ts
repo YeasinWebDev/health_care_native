@@ -1,19 +1,21 @@
 import { getEnvs } from "../utils/getEnvs";
 
 export async function apiFetch(endpoint: string, options?: RequestInit) {
+  const isFormData = options?.body instanceof FormData;
+
   const res = await fetch(`${getEnvs.apiUrl}${endpoint}`, {
+    method: options?.method,
+    body: options?.body,
     headers: {
-      "Content-Type": "application/json",
+      ...(isFormData ? {} : { "Content-Type": "application/json" }),
       ...(options?.headers || {}),
     },
-    ...options,
   });
 
-  const data = await res.json(); // read backend response
+  const data = await res.json();
 
   if (!res.ok) {
-    // throw backend error message
-    throw new Error(data?.message || data?.error || "API Error");
+    throw new Error(data?.message || "API Error");
   }
 
   return data;
