@@ -56,7 +56,7 @@ export default function RootLayout() {
 
   return (
     <TamaguiProvider config={config} defaultTheme={colorScheme ?? "light"}>
-      <SafeAreaProvider>
+      <SafeAreaProvider style={{ backgroundColor:"#fff"}}>
         <QueryClientProvider client={queryClient}>
           <Stack screenOptions={{ headerShown: false }} />
           <Toast />

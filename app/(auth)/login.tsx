@@ -4,9 +4,9 @@ import { useEffect, useState } from "react";
 import { Button, H4, SizableText, Text, YStack } from "tamagui";
 import Toast from "react-native-toast-message";
 
-import { useLogin } from "../api/auth";
 import { getToken, getUser } from "../lib/storage";
 import { loginSchema } from "../validation/authSchema";
+import { useLogin } from "../hooks/useAuth";
 
 export default function Login() {
   const [email, setEmail] = useState("");

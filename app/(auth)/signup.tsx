@@ -5,7 +5,7 @@ import { Button, H4, ScrollView, Select, SizableText, Text, XStack } from "tamag
 import { Adapt, Sheet, YStack } from "tamagui";
 import { signupSchema } from "../validation/authSchema";
 import Toast from "react-native-toast-message";
-import { useLogin, useSignup } from "../api/auth";
+import { useLogin, useSignup } from "../hooks/useAuth";
 
 export default function Signup() {
   const [name, setName] = useState("");
