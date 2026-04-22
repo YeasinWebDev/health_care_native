@@ -9,16 +9,27 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./lib/queryClient";
-import { getToken } from "./lib/storage";
-import Toast from "react-native-toast-message"
+import { getToken, removeToken, removeUser } from "./lib/storage";
+import Toast from "react-native-toast-message";
+import { useMe } from "./hooks/useAuth";
 
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <RootLayoutInner />
+    </QueryClientProvider>
+  );
+}
+
+function RootLayoutInner() {
   const colorScheme = useColorScheme();
-  const router = useRouter()
-  const segments = useSegments()
-  const [loading, setLoading] = useState(true)
+  const router = useRouter();
+  const segments = useSegments();
+  const [loading, setLoading] = useState(true);
+
+  const { data, isLoading } = useMe();
 
   const [loaded] = useFonts({
     ClashDisplayBold: require("../assets/fonts/ClashDisplay-Bold.otf"),
@@ -32,35 +43,42 @@ export default function RootLayout() {
     if (loaded) SplashScreen.hideAsync();
   }, [loaded]);
 
-    useEffect(() => {
+  useEffect(() => {
     const checkAuth = async () => {
-      const token = await getToken()
-
-      const inAuthGroup = segments[0] === "(auth)"
+      const token = await getToken();
+      const inAuthGroup = segments[0] === "(auth)";
 
       if (!token && !inAuthGroup) {
-        router.replace("/(auth)/login")
+        router.replace("/(auth)/login");
       }
 
       if (token && inAuthGroup) {
-        router.replace("/(app)")
+        
+        if (data?.data) {
+          router.replace("/(app)");
+        }else{
+          router.replace("/(auth)/login");
+          await removeToken();
+          await removeUser();
+        }
       }
 
-      setLoading(false)
-    }
+      setLoading(false);
+    };
 
-    checkAuth()
-  }, [segments])
+    if (!isLoading) {
+      checkAuth();
+    }
+  }, [segments, isLoading, data]);
 
   if (!loaded) return null;
+  if (loading) return null;
 
   return (
     <TamaguiProvider config={config} defaultTheme={colorScheme ?? "light"}>
-      <SafeAreaProvider style={{ backgroundColor:"#fff"}}>
-        <QueryClientProvider client={queryClient}>
-          <Stack screenOptions={{ headerShown: false }} />
-          <Toast />
-        </QueryClientProvider>
+      <SafeAreaProvider style={{ backgroundColor: "#fff" }}>
+        <Stack screenOptions={{ headerShown: false }} />
+        <Toast />
       </SafeAreaProvider>
     </TamaguiProvider>
   );

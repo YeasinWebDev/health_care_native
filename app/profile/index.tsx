@@ -1,15 +1,17 @@
 import { useEffect, useState } from "react";
-import { YStack, XStack, H4, SizableText, Input, Button, Image, ScrollView, Select, Adapt, Sheet, H5 } from "tamagui";
+import { YStack, XStack, H4, SizableText, Input, Button, Image, ScrollView, Select, Adapt, Sheet, H5, Text, Spinner } from "tamagui";
 import * as ImagePicker from "expo-image-picker";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useRouter } from "expo-router";
+import Toast from "react-native-toast-message";
+
 import { removeToken, removeUser } from "../lib/storage";
-import { useMe } from "../hooks/useAuth";
+import { updateProfile, useMe } from "../hooks/useAuth";
 
 const ProfilePage = () => {
   const router = useRouter();
-  const { data, isLoading } = useMe();
-
+  const { data, isLoading, isError: isMeError, refetch } = useMe();
+  const { mutateAsync: updateUser, isPending: isUpdating } = updateProfile();
 
   useEffect(() => {
     if (data) {
@@ -18,16 +20,15 @@ const ProfilePage = () => {
       const userInfo = {
         name: roleData.name,
         email: data.data.email,
-        role: data.data.role,
         image: roleData.profilePhoto,
         contactNumber: roleData.contactNumber,
         address: roleData.address,
         gender: roleData.gender,
-        experience: String(roleData.experience),
-        appointmentFee: String(roleData.appointmentFee),
-        designation: roleData.designation,
-        qualification: roleData.qualification,
-        currentWorkPlace: roleData.currentWorkPlace,
+        experience: String(roleData.experience || 1) || "",
+        appointmentFee: String(roleData.appointmentFee || 100) || "",
+        designation: roleData.designation || "",
+        qualification: roleData.qualification || "",
+        currentWorkPlace: roleData.currentWorkPlace || "",
       };
       setForm(userInfo);
     }
@@ -36,7 +37,6 @@ const ProfilePage = () => {
   // Form state (all possible fields)
   const [form, setForm] = useState({
     name: "",
-    role: "",
     email: "",
     image: "",
     contactNumber: "",
@@ -61,15 +61,13 @@ const ProfilePage = () => {
   };
 
   // Save handler
-  const handleSave = () => {
-    const updatedData = {
-      ...form,
-      role: form.role,
-    };
-
-    console.log("Send to backend:", updatedData);
-
-    // setUser({ ...user, name: form.name });
+  const handleSave = async () => {
+    try {
+      await updateUser(form);
+      refetch();
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const handleLogOut = async () => {
@@ -82,12 +80,19 @@ const ProfilePage = () => {
   if (isLoading) {
     return (
       <YStack flex={1} alignItems="center" justifyContent="center" gap="$4">
-        <H4>Loading...</H4>
+        <Spinner />
       </YStack>
     );
   }
 
-  console.log(form);
+  if (!data || isMeError) {
+    Toast.show({
+      type: "error",
+      text1: "User not found",
+    });
+    router.push("/(auth)/login");
+    return;
+  }
 
   return (
     <YStack p="$4" gap="$4" bg="#fff" flex={1}>
@@ -108,7 +113,7 @@ const ProfilePage = () => {
         <YStack bg="#f5f5f5" p="$4" br="$6" ai="center" gap="$3" shadowColor="$shadowColor" shadowRadius={10}>
           {/* Avatar */}
           <XStack w={90} h={90} br={45} bg="$blue9" ai="center" jc="center" overflow="hidden">
-            {form.image ? <Image src={{ uri: form.image }} width="100%" height="100%" /> : <H4 color="white">{form.name?.[0]?.toUpperCase() || "U"}</H4>}
+            {form.image ? <Image src={form.image} width="100%" height="100%" /> : <H4 color="white">{form.name?.[0]?.toUpperCase() || "U"}</H4>}
           </XStack>
 
           {/* Change Image */}
@@ -118,10 +123,10 @@ const ProfilePage = () => {
 
           {/* Info */}
           <YStack ai="center">
-            <H4>{form.name}</H4>
-            <SizableText color="$gray11">{form.email}</SizableText>
+            <H4>{data?.data?.roleData.name}</H4>
+            <SizableText color="$gray11">{data?.data.email}</SizableText>
             <SizableText size="$2" color="$gray10">
-              Role: <SizableText fontWeight="600">{form.role.charAt(0) + form.role.slice(1).toLowerCase()}</SizableText>
+              Role: <SizableText fontWeight="600">{data?.data.role.charAt(0) + data?.data.role.slice(1).toLowerCase()}</SizableText>
             </SizableText>
           </YStack>
         </YStack>
@@ -139,7 +144,7 @@ const ProfilePage = () => {
           <Input value={form.address} onChangeText={(v) => setForm({ ...form, address: v })} placeholder="Address" />
 
           {/* PATIENT */}
-          {form.role === "PATIENT" && (
+          {data?.data.role === "PATIENT" && (
             <Select value={form.gender} onValueChange={(v) => setForm({ ...form, gender: v })}>
               <Select.Trigger
                 style={{
@@ -176,7 +181,7 @@ const ProfilePage = () => {
                       <Select.ItemText>Female</Select.ItemText>
                     </Select.Item>
 
-                    <Select.Item index={2} value="other">
+                    <Select.Item index={2} value="OTHER">
                       <Select.ItemText>Other</Select.ItemText>
                     </Select.Item>
                   </Select.Group>
@@ -186,7 +191,7 @@ const ProfilePage = () => {
           )}
 
           {/* DOCTOR */}
-          {form.role === "DOCTOR" && (
+          {data?.data.role === "DOCTOR" && (
             <>
               <Input value={form.experience} onChangeText={(v) => setForm({ ...form, experience: v })} placeholder="Experience (years)" />
 
@@ -201,8 +206,8 @@ const ProfilePage = () => {
           )}
 
           {/* Save Button */}
-          <Button onPress={handleSave} theme="blue">
-            Save Changes
+          <Button onPress={handleSave} disabled={isUpdating} disabledStyle={{ bg: "#04498c" }} theme="blue">
+            <Text color={isUpdating ? "#fff" : "#04498c"}>{isUpdating ? "Updating..." : "Save"}</Text>
           </Button>
         </YStack>
       </ScrollView>

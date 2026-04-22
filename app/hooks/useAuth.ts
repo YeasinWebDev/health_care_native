@@ -2,7 +2,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import Toast from "react-native-toast-message";
 
-import { loginApi, signupApi, getMeApi } from "../api/auth";
+import { loginApi, signupApi, getMeApi, profileUpdate } from "../api/auth";
 import { saveToken, saveUser, getToken } from "../lib/storage";
 
 // ================= LOGIN =================
@@ -37,6 +37,19 @@ export const useSignup = () => {
     },
   });
 };
+
+export const updateProfile = () => {
+  return useMutation({
+    mutationFn:profileUpdate,
+    onSuccess: async () => {
+      Toast.show({ type: "success", text1: "Profile updated" });
+    },
+    onError: async () => {
+      Toast.show({ type: "error", text1: "Profile update failed" });
+    }
+  })
+}
+
 
 // ================= GET ME =================
 export const useMe = () => {
