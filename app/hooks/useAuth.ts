@@ -3,7 +3,7 @@ import { useRouter } from "expo-router";
 import Toast from "react-native-toast-message";
 
 import { loginApi, signupApi, getMeApi, profileUpdate } from "../api/auth";
-import { saveToken, saveUser, getToken } from "../lib/storage";
+import { saveToken, getToken } from "../lib/storage";
 
 // ================= LOGIN =================
 export const useLogin = () => {
@@ -14,7 +14,6 @@ export const useLogin = () => {
 
     onSuccess: async (data) => {
       await saveToken(data.data.token.accessToken);
-      await saveUser(data.data.user);
 
       Toast.show({ type: "success", text1: "Login successful" });
 

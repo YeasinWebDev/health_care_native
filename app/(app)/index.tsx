@@ -1,12 +1,11 @@
 import { Link } from 'expo-router'
 import { Button, H1, YStack } from 'tamagui'
-import { removeToken, removeUser } from '../lib/storage'
+import { removeToken } from '../lib/storage'
 
 export default function HomeScreen() {
 
     const handleLogOut = async() => {
         await removeToken()
-        await removeUser()
 
     }
   return (

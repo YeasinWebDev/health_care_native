@@ -5,7 +5,7 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useRouter } from "expo-router";
 import Toast from "react-native-toast-message";
 
-import { removeToken, removeUser } from "../lib/storage";
+import { removeToken } from "../lib/storage";
 import { updateProfile, useMe } from "../hooks/useAuth";
 
 const ProfilePage = () => {
@@ -72,7 +72,6 @@ const ProfilePage = () => {
 
   const handleLogOut = async () => {
     await removeToken();
-    await removeUser();
 
     router.push("/(auth)/login");
   };

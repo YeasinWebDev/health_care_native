@@ -5,7 +5,6 @@ import { useMe } from "../hooks/useAuth";
 
 export default function AuthLayout() {
   const { data, isLoading, isError: isMeError, refetch } = useMe();
-  console.log(data);
 
   if (isLoading) {
     return <Spinner />;

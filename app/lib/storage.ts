@@ -17,17 +17,3 @@ export const removeToken = async () => {
 
 
 
-
-// save user data
-export const saveUser = async (user: any) => {
-  await AsyncStorage.setItem('user', JSON.stringify(user))
-}
-
-export const getUser = async () => {
-  const data = await AsyncStorage.getItem('user')
-  return data ? JSON.parse(data) : null
-}
-
-export const removeUser = async () => {
-  await AsyncStorage.removeItem('user')
-}
