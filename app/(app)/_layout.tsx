@@ -4,7 +4,7 @@ import { H5, SizableText, Spinner, XStack, YStack } from "tamagui";
 import { useMe } from "../hooks/useAuth";
 
 export default function AuthLayout() {
-  const { data, isLoading, isError: isMeError, refetch } = useMe();
+  const { data, isLoading } = useMe();
 
   if (isLoading) {
     return <Spinner />;
