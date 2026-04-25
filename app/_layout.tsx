@@ -43,32 +43,40 @@ function RootLayoutInner() {
     if (loaded) SplashScreen.hideAsync();
   }, [loaded]);
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      const token = await getToken();
-      const inAuthGroup = segments[0] === "(auth)";
+useEffect(() => {
+  if (!loaded) return;
+  if (isLoading) return;
 
-      if (!token && !inAuthGroup) {
-        router.replace("/(auth)/login");
-      }
+  const checkAuth = async () => {
+    const token = await getToken();
 
-      if (token && inAuthGroup) {
-        
-        if (data?.data) {
-          router.replace("/(app)");
-        }else{
-          router.replace("/(auth)/login");
-          await removeToken();
-        }
-      }
+    const firstSegment = String(segments[0]);
+    const inAuthGroup = firstSegment === "(auth)";
 
+    if (!token) {
+      router.replace("/(auth)/login");
       setLoading(false);
-    };
-
-    if (!isLoading) {
-      checkAuth();
+      return;
     }
-  }, [segments, isLoading, data]);
+
+    if (token && !data?.data) {
+      await removeToken();
+      router.replace("/(auth)/login");
+      setLoading(false);
+      return;
+    }
+
+    if (token && data?.data && inAuthGroup) {
+      router.replace("/(app)");
+      setLoading(false);
+      return;
+    }
+
+    setLoading(false);
+  };
+
+  checkAuth();
+}, [loaded, segments, isLoading, data]);
 
   if (!loaded) return null;
   if (loading) return null;
