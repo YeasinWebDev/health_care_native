@@ -1,12 +1,15 @@
-import { View, Text } from 'react-native'
-import React from 'react'
+import { Text } from "react-native";
+import React from "react";
+import { YStack } from "tamagui";
+import SimplePieChart from "../../../components/DoctorDashboard";
 
 const Dashboard = () => {
   return (
-    <View>
+    <YStack>
       <Text>Dashboard</Text>
-    </View>
-  )
-}
+      <SimplePieChart/>
+    </YStack>
+  );
+};
 
-export default Dashboard
+export default Dashboard;

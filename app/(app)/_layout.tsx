@@ -1,17 +1,26 @@
 import { Link, Stack } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { H5, SizableText, Spinner, XStack, YStack } from "tamagui";
+import { Button, H5, SizableText, Spinner, XStack, YStack } from "tamagui";
 import { useMe } from "../hooks/useAuth";
+import { removeToken } from "../lib/storage";
 
 export default function AuthLayout() {
-  const { data, isLoading } = useMe();
+  const { data, isLoading,isError } = useMe();
 
   if (isLoading) {
     return <Spinner />;
   }
 
+  const handellogout = () => {
+    removeToken();
+  };
+
+  console.log(isError,"error")
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#fff", paddingHorizontal: 10 }}>
+      {/* <Button onPress={handellogout}>
+        logout
+      </Button> */}
       {data ? (
         <XStack bg="#f5f5f5" p="$3" br="$6" shadowColor="$shadowColor" shadowRadius={8} mb="$3" ai="center" jc="space-between">
           <YStack>
@@ -42,7 +51,9 @@ export default function AuthLayout() {
         </XStack>
       )}
       {/* Screens */}
-      <Stack screenOptions={{ headerShown: false }} />
+      <YStack flex={1} backgroundColor="#f5f5f5" borderRadius={10} overflow="hidden" padding={10}>
+        <Stack screenOptions={{ headerShown: false }} />
+      </YStack>
     </SafeAreaView>
   );
 }

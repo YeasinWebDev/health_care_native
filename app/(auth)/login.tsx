@@ -6,7 +6,6 @@ import Toast from "react-native-toast-message";
 
 import { loginSchema } from "../validation/authSchema";
 import { useLogin } from "../hooks/useAuth";
-import { getToken} from "../lib/storage";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -43,19 +42,6 @@ export default function Login() {
     }
   };
 
-  useEffect(() => {
-    const checkToken = async () => {
-      const token = await getToken();
-
-      if (token ) {
-        console.log("User is logged in ✅", token);
-      } else {
-        console.log("No token ❌");
-      }
-    };
-
-    checkToken();
-  }, []);
 
   return (
     <View style={{ flex: 1, justifyContent: "center", padding: 20 ,marginBottom: 130 }}>

@@ -56,8 +56,9 @@ export const useMe = () => {
     queryKey: ["me"],
     queryFn: async () => {
       const token = await getToken();
-      if(!token) return
-      return getMeApi(token);
+      return getMeApi(token!);
     },
+    enabled: !!(getToken), 
+    
   });
 };

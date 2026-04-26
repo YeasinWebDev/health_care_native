@@ -83,8 +83,8 @@ useEffect(() => {
 
   return (
     <TamaguiProvider config={config} defaultTheme={colorScheme ?? "light"}>
-      <SafeAreaProvider style={{ backgroundColor: "#fff" }}>
-        <Stack screenOptions={{ headerShown: false }} />
+      <SafeAreaProvider>
+        <Stack screenOptions={{ headerShown: false}} />
         <Toast />
       </SafeAreaProvider>
     </TamaguiProvider>
