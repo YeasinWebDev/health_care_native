@@ -1,14 +1,13 @@
 import { Text } from "react-native";
 import React from "react";
-import { YStack } from "tamagui";
-import SimplePieChart from "../../../components/DoctorDashboard";
+import { ScrollView, YStack } from "tamagui";
+import DoctorDashboard from "../../../components/DoctorDashboard";
 
 const Dashboard = () => {
   return (
-    <YStack>
-      <Text>Dashboard</Text>
-      <SimplePieChart/>
-    </YStack>
+    <ScrollView marginBottom={100} showsVerticalScrollIndicator={false}>
+      <DoctorDashboard/>
+    </ScrollView>
   );
 };
 

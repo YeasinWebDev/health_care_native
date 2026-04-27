@@ -67,9 +67,10 @@ export default function CustomTabBar({
 const styles = StyleSheet.create({
   wrapper: {
     position: "absolute",
-    bottom: 18,
+    bottom: 5,
     left: 18,
     right: 18,
+    backgroundColor: "transparent",
   },
   tabBar: {
     flexDirection: "row",
@@ -81,11 +82,11 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingHorizontal: 20,
 
-    shadowColor: "#000",
-    shadowOpacity: 0.2,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 5 },
-    elevation: 10,
+    // shadowColor: "#000",
+    // shadowOpacity: 0.2,
+    // shadowRadius: 12,
+    // shadowOffset: { width: 0, height: 5 },
+    // elevation: 10,
   },
   tabButton: {
     flex: 1,
