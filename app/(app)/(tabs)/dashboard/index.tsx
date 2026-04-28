@@ -1,7 +1,7 @@
 import { Text } from "react-native";
 import React from "react";
 import { ScrollView, YStack } from "tamagui";
-import DoctorDashboard from "../../../components/DoctorDashboard";
+import DoctorDashboard from "../../../components/doctor/DoctorDashboard";
 
 const Dashboard = () => {
   return (

@@ -1,5 +1,6 @@
 import { Redirect } from "expo-router";
 import { getToken } from "../lib/storage";
+import { Text } from "tamagui";
 
 export default function HomeScreen() {
   if (getToken() !== null) {
@@ -7,7 +8,9 @@ export default function HomeScreen() {
   }
 
   return (
-    <></>
+    <>
+    <Text>Home</Text>
+    </>
     // <YStack flex={1} alignItems="center" justifyContent="center" gap="$4">
     //   <H1>Welcome</H1>
     //   <Link href="/(auth)/signup">Go to Login</Link>

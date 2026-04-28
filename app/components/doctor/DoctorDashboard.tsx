@@ -1,7 +1,8 @@
 import { Dimensions } from "react-native";
 import { PieChart } from "react-native-chart-kit";
-import { useDoctorDashboard } from "../hooks/doctor/useDoctorDashboard";
+
 import { Card, Paragraph, Spinner, Text, XStack, YStack, Separator, H5 } from "tamagui";
+import { useDoctorDashboard } from "../../hooks/doctor/useDoctorDashboard";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -35,15 +36,19 @@ export default function DoctorDashboard() {
     );
   }
 
+  console.log(data,"dashboard")
+
   return (
     <YStack flex={1}>
       {/* Header */}
-      {/* <YStack my="$4" ai="center" jc="center">
-        <H5 fontWeight="800">Doctor Dashboard</H5>
-        <Paragraph theme="alt2" mt="$1">
+      <YStack my="$4" ml='$2'>
+        <Text fontSize="$6" fontWeight="800">
+          Dashboard
+        </Text>
+        <Paragraph theme="alt2">
           Overview of your clinic performance
         </Paragraph>
-      </YStack> */}
+      </YStack>
 
       {/* Stats Cards */}
       <XStack flexWrap="wrap" gap="$3" mb="$4">

@@ -15,7 +15,6 @@ export default function AuthLayout() {
     removeToken();
   };
 
-  console.log(isError,"error")
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#fff", paddingHorizontal: 10 }}>
       {/* <Button onPress={handellogout}>

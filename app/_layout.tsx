@@ -13,6 +13,9 @@ import { getToken, removeToken } from "./lib/storage";
 import Toast from "react-native-toast-message";
 import { useMe } from "./hooks/useAuth";
 
+import { PortalProvider } from "tamagui";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
@@ -43,50 +46,54 @@ function RootLayoutInner() {
     if (loaded) SplashScreen.hideAsync();
   }, [loaded]);
 
-useEffect(() => {
-  if (!loaded) return;
-  if (isLoading) return;
+  useEffect(() => {
+    if (!loaded) return;
+    if (isLoading) return;
 
-  const checkAuth = async () => {
-    const token = await getToken();
+    const checkAuth = async () => {
+      const token = await getToken();
 
-    const firstSegment = String(segments[0]);
-    const inAuthGroup = firstSegment === "(auth)";
+      const firstSegment = String(segments[0]);
+      const inAuthGroup = firstSegment === "(auth)";
 
-    if (!token) {
-      router.replace("/(auth)/login");
+      if (!token) {
+        router.replace("/(auth)/login");
+        setLoading(false);
+        return;
+      }
+
+      if (token && !data?.data) {
+        await removeToken();
+        router.replace("/(auth)/login");
+        setLoading(false);
+        return;
+      }
+
+      if (token && data?.data && inAuthGroup) {
+        router.replace("/(app)");
+        setLoading(false);
+        return;
+      }
+
       setLoading(false);
-      return;
-    }
+    };
 
-    if (token && !data?.data) {
-      await removeToken();
-      router.replace("/(auth)/login");
-      setLoading(false);
-      return;
-    }
-
-    if (token && data?.data && inAuthGroup) {
-      router.replace("/(app)");
-      setLoading(false);
-      return;
-    }
-
-    setLoading(false);
-  };
-
-  checkAuth();
-}, [loaded, segments, isLoading, data]);
+    checkAuth();
+  }, [loaded, segments, isLoading, data]);
 
   if (!loaded) return null;
   if (loading) return null;
 
   return (
-    <TamaguiProvider config={config} defaultTheme={colorScheme ?? "light"}>
-      <SafeAreaProvider>
-        <Stack screenOptions={{ headerShown: false}} />
-        <Toast />
-      </SafeAreaProvider>
-    </TamaguiProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <TamaguiProvider config={config} defaultTheme={colorScheme ?? "light"}>
+        <SafeAreaProvider>
+          <PortalProvider>
+            <Stack screenOptions={{ headerShown: false }} />
+            <Toast />
+          </PortalProvider>
+        </SafeAreaProvider>
+      </TamaguiProvider>
+    </GestureHandlerRootView>
   );
 }

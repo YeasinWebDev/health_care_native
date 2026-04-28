@@ -13,7 +13,7 @@ export const useLogin = () => {
     mutationFn: loginApi,
 
     onSuccess: async (data) => {
-      await saveToken(data.data.token.accessToken);
+      await saveToken(data?.data?.token.accessToken);
 
       Toast.show({ type: "success", text1: "Login successful" });
 

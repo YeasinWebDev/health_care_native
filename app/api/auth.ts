@@ -98,11 +98,12 @@ export const profileUpdate = async (data: {
 };
 
 // GET ME
-export const getMeApi = async (token: string) => {
+export const getMeApi = async () => {
+  const token = await getToken();
   return await apiFetch("/user/me", {
     method: "GET",
     headers: {
-      authorization: token,
+      authorization:`${token}`,
     },
   });
 };

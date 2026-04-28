@@ -11,6 +11,7 @@
   "dependencies": {
     "@expo-google-fonts/roboto": "^0.4.3",
     "@expo/vector-icons": "^15.0.3",
+    "@gorhom/portal": "^1.0.14",
     "@react-native-async-storage/async-storage": "2.2.0",
     "@shopify/react-native-skia": "^2.6.2",
     "@tamagui/animations-react-native": "^2.0.0-rc.40",
